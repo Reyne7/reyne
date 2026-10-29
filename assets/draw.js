@@ -75,23 +75,26 @@
     return g;
   }
 
-  /* ---------- 首屏周期线 ---------- */
-  // 一个完整周期：复苏（上升）→ 过热（波峰）→ 滞胀（下降）→ 衰退（波谷）
-  var CYCLE = { x0: -30, x1: 1030, mid: 200, amp: 78, t0: -0.18, t1: 0.86 };
-  function cyclePoint(u) {
-    var t = CYCLE.t0 + (CYCLE.t1 - CYCLE.t0) * u;
-    return [CYCLE.x0 + (CYCLE.x1 - CYCLE.x0) * u, CYCLE.mid - CYCLE.amp * Math.sin(2 * Math.PI * t)];
-  }
-  function phaseU(t) { return (t - CYCLE.t0) / (CYCLE.t1 - CYCLE.t0); }
+  /* ---------- 首屏：长期趋势 + 实际产出 ---------- */
+  // s 是周期相位，sin(2πs) 是产出缺口：0.75 波谷 → 1 上穿趋势 → 1.25 波峰 → 1.5 下穿趋势 → 1.75 波谷
+  // 四段：[0.75,1) 复苏  [1,1.25) 过热  [1.25,1.5) 滞胀  [1.5,1.75) 衰退
+  var HC = { x0: -20, x1: 1020, s0: 0.62, s1: 1.9, ty: 262, amp: 96, axisY: 448, top: 50, h: 440 };
+  function hx(s) { return HC.x0 + (s - HC.s0) / (HC.s1 - HC.s0) * (HC.x1 - HC.x0); }
+  function hy(s) { return HC.ty - HC.amp * Math.sin(2 * Math.PI * s); }
+  function sOfX(x) { return HC.s0 + (x - HC.x0) / (HC.x1 - HC.x0) * (HC.s1 - HC.s0); }
+  function phaseOf(s) { return Math.floor((((s % 1) + 1) % 1) * 4) % 4; } // 0 过热 1 滞胀 2 衰退 3 复苏
   function heroCycle(svg) {
-    var P = Pen(svg), pts = [];
-    for (var i = 0; i <= 60; i++) pts.push(cyclePoint(i / 60));
-    var g = P.group('draw-in');
-    P.curve(pts, { stroke: ACC, strokeWidth: 1.7, roughness: 1.4, bowing: 2, seed: 11 }, g);
-    [0, .25, .5, .75].forEach(function (t) {
-      var p = cyclePoint(phaseU(t));
-      el('circle', { cx: p[0], cy: p[1], r: 3, 'class': 'tick' }, g);
+    var P = Pen(svg);
+    [0.75, 1, 1.25, 1.5, 1.75].forEach(function (c, i) {
+      P.line(hx(c), 60, hx(c), HC.axisY, { stroke: 'var(--line)', strokeWidth: 1, roughness: .3, seed: 40 + i, strokeLineDash: [3, 6] });
+      P.line(hx(c), HC.axisY - 9, hx(c), HC.axisY + 9, { strokeWidth: 1.3, roughness: .5, seed: 50 + i });
     });
+    P.line(20, HC.axisY, 980, HC.axisY, { strokeWidth: 1.3, roughness: .6, seed: 3 });
+    var bar = el('rect', { 'class': 'phase-bar', x: hx(.75), y: HC.axisY - 4, width: hx(1) - hx(.75), height: 8 }, svg);
+    var g = P.group('draw-in'), pts = [];
+    for (var i = 0; i <= 90; i++) { var s = HC.s0 + (HC.s1 - HC.s0) * i / 90; pts.push([hx(s), hy(s)]); }
+    P.curve(pts, { stroke: ACC, strokeWidth: 2, roughness: 1.1, bowing: 1.4, seed: 11 }, g);
+    return bar;
   }
 
   /* ---------- About：书桌 ---------- */
@@ -268,5 +271,5 @@
     P.text(room ? endX + 40 : endX + 70, endY - (room ? 70 : 52), '发给我', 'hand zh acc', { style: 'font-size:' + (room ? 30 : 22) + 'px', 'text-anchor': room ? 'start' : 'end' });
   }
 
-  window.Draw = { Pen: Pen, heroCycle: heroCycle, cyclePoint: cyclePoint, phaseU: phaseU, desk: desk, ART: ART, plane: plane };
+  window.Draw = { Pen: Pen, heroCycle: heroCycle, HC: HC, hx: hx, hy: hy, sOfX: sOfX, phaseOf: phaseOf, desk: desk, ART: ART, plane: plane };
 })();

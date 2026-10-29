@@ -19,60 +19,59 @@
   if (mq.addEventListener) mq.addEventListener('change', syncTheme);
   $('.theme').addEventListener('click', toggleTheme);
 
-  /* ---------- 首屏：周期线 + 你在这里 ---------- */
-  var PHASES = [
-    ['复苏', '经济回暖，通胀还低，企业盈利开始改善。'],
-    ['过热', '增长很快，通胀开始抬头，央行准备加息。'],
-    ['滞胀', '增长放缓，物价还在涨，是最难受的阶段。'],
-    ['衰退', '需求萎缩，通胀回落，央行开始降息。']
+  /* ---------- 首屏：圆点沿实际产出曲线走，所在那一段变深 ---------- */
+  var PHASES = [ // 按 Draw.phaseOf 的顺序：0 过热 1 滞胀 2 衰退 3 复苏
+    ['过热', '产出高于趋势、还在往上，通胀开始抬头。'],
+    ['滞胀', '产出见顶回落，物价却还在涨。'],
+    ['衰退', '产出跌破趋势，需求萎缩，通胀回落。'],
+    ['复苏', '产出还低于趋势，但已经开始回升。']
   ];
   var heroSvg = $('#hero-svg'), nameBox = $('#hero-name'), here = $('#here'), note = $('#phase-note');
-  var labels = $$('.phase', nameBox);
-  var HOME_T = 0.12; // 默认停在复苏往上走的位置
-  // 标签放在周期线旁边：上升段在左上，波峰在上，下降段在右上，波谷在下
-  var OFF = [[-30, -26], [0, -34], [30, -26], [0, 26]];
-  function pct(p) { return [p[0] / 10, p[1] / 3.9]; }
-  var curT = HOME_T, goalT = HOME_T, raf = 0;
-  function setPhase(t) {
-    var idx = ((Math.round(t / 0.25) % 4) + 4) % 4;
-    labels.forEach(function (l, i) { l.classList.toggle('on', i === idx); });
+  var segs = $$('.seg', nameBox), phaseBar;
+  var HOME_S = 0.88; // 默认停在复苏：还低于趋势，但在往上走
+  var curS = HOME_S, goalS = HOME_S, raf = 0;
+  function setPhase(s) {
+    var idx = Draw.phaseOf(s);
+    segs.forEach(function (l) { l.classList.toggle('on', +l.dataset.phase === idx); });
+    var a = Math.floor(s * 4) / 4;
+    phaseBar.setAttribute('x', Draw.hx(a)); phaseBar.setAttribute('width', Draw.hx(a + .25) - Draw.hx(a));
     if (note.dataset.idx !== String(idx)) {
       note.dataset.idx = idx;
       note.querySelector('b').textContent = PHASES[idx][0];
       note.querySelector('span').textContent = PHASES[idx][1];
     }
   }
-  function drawHere(t) {
-    var q = pct(Draw.cyclePoint(Math.max(0, Math.min(1, Draw.phaseU(t)))));
-    here.style.left = q[0] + '%'; here.style.top = q[1] + '%';
-  }
+  function vy(y) { return (y - Draw.HC.top) / Draw.HC.h * 100 + '%'; }
+  function drawHere(s) { here.style.left = Draw.hx(s) / 10 + '%'; here.style.top = vy(Draw.hy(s)); }
   function tick() {
-    curT += (goalT - curT) * 0.14;
-    if (Math.abs(goalT - curT) < 0.0005) curT = goalT;
-    drawHere(curT);
-    raf = curT === goalT ? 0 : requestAnimationFrame(tick);
+    curS += (goalS - curS) * 0.14;
+    if (Math.abs(goalS - curS) < 0.0005) curS = goalS;
+    drawHere(curS);
+    raf = curS === goalS ? 0 : requestAnimationFrame(tick);
   }
-  function placeHere(t) {
-    goalT = t; setPhase(t);
-    if (reduce) { curT = t; drawHere(t); return; }
+  function placeHere(s) {
+    goalS = s; setPhase(s);
+    if (reduce) { curS = s; drawHere(s); return; }
     if (!raf) raf = requestAnimationFrame(tick);
   }
   function initHero() {
-    Draw.heroCycle(heroSvg);
-    labels.forEach(function (l, i) {
-      var p = Draw.cyclePoint(Draw.phaseU(i * 0.25)), q = pct([p[0] + OFF[i][0], p[1] + OFF[i][1]]);
-      l.style.left = q[0] + '%'; l.style.top = q[1] + '%'; l.style.transform = 'translate(-50%,-50%)';
+    phaseBar = Draw.heroCycle(heroSvg);
+    segs.forEach(function (l) {
+      var k = { 3: .75, 0: 1, 1: 1.25, 2: 1.5 }[l.dataset.phase];
+      l.style.left = Draw.hx(k + .125) / 10 + '%'; l.style.top = vy(Draw.HC.axisY + 20);
     });
-    drawHere(HOME_T); setPhase(HOME_T);
+    $('.trend-label', nameBox).style.top = vy(Draw.HC.ty - 30);
+    drawHere(HOME_S); setPhase(HOME_S);
+    if (matchMedia('(pointer: coarse)').matches) note.querySelector('small').textContent = '周期四个阶段 · 手指在名字上左右滑';
     var hero = $('.hero');
     var follow = function (e) {
       var r = nameBox.getBoundingClientRect();
-      var u = (e.clientX - r.left) / r.width;
-      placeHere(-0.18 + 1.04 * Math.max(0, Math.min(1, u)));
+      var s = Draw.sOfX((e.clientX - r.left) / r.width * 1000);
+      placeHere(Math.max(0.75, Math.min(1.749, s)));
     };
     hero.addEventListener('pointermove', function (e) { if (e.pointerType === 'mouse' || e.buttons) follow(e); });
     nameBox.addEventListener('pointerdown', follow);
-    hero.addEventListener('pointerleave', function () { placeHere(HOME_T); });
+    hero.addEventListener('pointerleave', function () { placeHere(HOME_S); });
     requestAnimationFrame(function () { requestAnimationFrame(function () { nameBox.classList.add('drawn'); }); });
   }
 
