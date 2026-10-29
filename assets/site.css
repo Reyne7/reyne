@@ -58,7 +58,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .drawn .draw-in{clip-path:inset(0 0 0 0);transition:clip-path 1.8s cubic-bezier(.6,.1,.3,1)}
 .phase{position:absolute;font-size:13px;color:var(--muted);line-height:1;white-space:nowrap;background:var(--bg);padding:2px 4px;transition:color .2s,background-color .3s;pointer-events:none}
 .phase.on{color:var(--ink);font-weight:500}
-.here{position:absolute;left:24%;top:40%;width:0;height:0;transition:left .35s cubic-bezier(.3,.7,.3,1),top .35s cubic-bezier(.3,.7,.3,1);pointer-events:none}
+.here{position:absolute;left:24%;top:40%;width:0;height:0;pointer-events:none}
 .here i{position:absolute;left:-6px;top:-6px;width:12px;height:12px;border-radius:50%;background:var(--accent)}
 .here i::after{content:"";position:absolute;inset:-8px;border:1px solid var(--accent);border-radius:50%;opacity:.45}
 .here b{position:absolute;right:16px;bottom:18px;font:400 clamp(20px,2.4vw,30px)/1 "Long Cang",cursive;color:var(--accent);white-space:nowrap}
@@ -287,3 +287,5 @@ footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:2
 .hi.drawn .plane,.hi.drawn .hand{opacity:1}
 .sticky>.wrap{width:100%}
 .here b{text-shadow:0 0 6px var(--bg),0 0 3px var(--bg),0 0 1px var(--bg)}
+@media (min-width:901px){.strip{cursor:grab;user-select:none;-webkit-user-select:none}.strip.dragging{cursor:grabbing}.strip.dragging .plate{pointer-events:none}}
+.book.no-link{cursor:default}

@@ -1,9 +1,11 @@
-# 推送到 main 时构建并部署到 GitHub Pages：https://reyne7.github.io/reyne/
+# 构建并部署到 GitHub Pages：https://reyne7.github.io/reyne/
+# 网站完善前先下线：只能在 Actions 页面手动运行（Run workflow）。
+# 想恢复推送即自动部署，把下面的 push 两行取消注释。
 name: Deploy to GitHub Pages
 
 on:
-  push:
-    branches: [main]
+  # push:
+  #   branches: [main]
   workflow_dispatch:
 
 permissions:

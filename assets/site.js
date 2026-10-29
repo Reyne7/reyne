@@ -32,12 +32,9 @@
   // 标签放在周期线旁边：上升段在左上，波峰在上，下降段在右上，波谷在下
   var OFF = [[-30, -26], [0, -34], [30, -26], [0, 26]];
   function pct(p) { return [p[0] / 10, p[1] / 3.9]; }
-  function placeHere(t) {
-    var u = Math.max(0, Math.min(1, Draw.phaseU(t)));
-    var q = pct(Draw.cyclePoint(u));
-    here.style.left = q[0] + '%'; here.style.top = q[1] + '%';
-    var tt = 0.18 * -1 + (0.86 + 0.18) * u;
-    var idx = ((Math.round(tt / 0.25) % 4) + 4) % 4;
+  var curT = HOME_T, goalT = HOME_T, raf = 0;
+  function setPhase(t) {
+    var idx = ((Math.round(t / 0.25) % 4) + 4) % 4;
     labels.forEach(function (l, i) { l.classList.toggle('on', i === idx); });
     if (note.dataset.idx !== String(idx)) {
       note.dataset.idx = idx;
@@ -45,13 +42,28 @@
       note.querySelector('span').textContent = PHASES[idx][1];
     }
   }
+  function drawHere(t) {
+    var q = pct(Draw.cyclePoint(Math.max(0, Math.min(1, Draw.phaseU(t)))));
+    here.style.left = q[0] + '%'; here.style.top = q[1] + '%';
+  }
+  function tick() {
+    curT += (goalT - curT) * 0.14;
+    if (Math.abs(goalT - curT) < 0.0005) curT = goalT;
+    drawHere(curT);
+    raf = curT === goalT ? 0 : requestAnimationFrame(tick);
+  }
+  function placeHere(t) {
+    goalT = t; setPhase(t);
+    if (reduce) { curT = t; drawHere(t); return; }
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
   function initHero() {
     Draw.heroCycle(heroSvg);
     labels.forEach(function (l, i) {
       var p = Draw.cyclePoint(Draw.phaseU(i * 0.25)), q = pct([p[0] + OFF[i][0], p[1] + OFF[i][1]]);
       l.style.left = q[0] + '%'; l.style.top = q[1] + '%'; l.style.transform = 'translate(-50%,-50%)';
     });
-    placeHere(HOME_T);
+    drawHere(HOME_T); setPhase(HOME_T);
     var hero = $('.hero');
     var follow = function (e) {
       var r = nameBox.getBoundingClientRect();
@@ -71,9 +83,11 @@
     var lamp = $('.lamp', svg);
     lamp.addEventListener('click', toggleTheme);
     lamp.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTheme(); } });
-    var map = { cycle: 'w-cycle', sql: 'w-sql', ai: 'w-ai', en: 'w-en' };
+    var map = { cycle: 'w-cycle', sql: 'w-sql', ai: 'w-ai' };
     $$('.book', svg).forEach(function (b) {
-      var go = function () { scrollToPlate(map[b.getAttribute('data-target')]); };
+      var id = map[b.getAttribute('data-target')];
+      if (!id) { b.classList.add('no-link'); return; }
+      var go = function () { scrollToPlate(id); };
       b.addEventListener('click', go);
       b.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
     });
@@ -113,6 +127,27 @@
     });
     number();
     sticky.addEventListener('scroll', onScroll, { passive: true });
+    initDrag();
+  }
+  function initDrag() {
+    var down = false, moved = false, x0 = 0, s0 = 0;
+    strip.addEventListener('dragstart', function (e) { e.preventDefault(); });
+    strip.addEventListener('pointerdown', function (e) {
+      if (!pinned || e.button !== 0) return;
+      down = true; moved = false; x0 = e.clientX; s0 = scrollY;
+    });
+    addEventListener('pointermove', function (e) {
+      if (!down) return;
+      var dx = e.clientX - x0;
+      if (!moved && Math.abs(dx) > 6) { moved = true; strip.classList.add('dragging'); }
+      if (moved) scrollTo({ top: s0 - dx * 1.2, behavior: 'instant' });
+    });
+    addEventListener('pointerup', function () {
+      if (!down) return;
+      down = false; strip.classList.remove('dragging');
+    });
+    // 拖过之后松手，不要误点进作品
+    strip.addEventListener('click', function (e) { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
   }
   function number() {
     var vis = plates.filter(function (p) { return !p.hidden; });

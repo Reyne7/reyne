@@ -104,7 +104,7 @@
       [70, 388, 150, 42, '周期 · 投资', 'cycle', '我在学周期 · 抖音 Mizu'],
       [82, 350, 130, 38, 'SQL', 'sql', '用外卖订单表学的'],
       [64, 316, 160, 34, 'AI 工具', 'ai', '给普通人的 AI 课'],
-      [90, 286, 118, 30, 'English', 'en', 'Oddverse · 英文动画']
+      [90, 286, 118, 30, 'English', 'en', '每天一点']
     ];
     books.forEach(function (b, i) {
       var g = P.group('book'); g.setAttribute('data-target', b[5]); g.setAttribute('tabindex', '0'); g.setAttribute('role', 'link'); g.setAttribute('aria-label', b[4] + '：' + b[6]);

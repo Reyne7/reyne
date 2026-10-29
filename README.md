@@ -33,7 +33,7 @@ npm run dev
 
 ## 部署
 
-**现在：GitHub Pages**（https://reyne7.github.io/reyne/）。推送到 `main` 后由 `.github/workflows/pages.yml` 自动构建部署（构建时 `BASE_PATH=/reyne`）。仓库 Settings → Pages 的 Source 需要选 **GitHub Actions**。
+**现在：GitHub Pages**（https://reyne7.github.io/reyne/）。目前已暂停自动部署，需要时在 Actions 页面手动运行 `.github/workflows/pages.yml`（构建时 `BASE_PATH=/reyne`）。仓库 Settings → Pages 的 Source 需要选 **GitHub Actions**。
 
 **以后：Vercel**
 
