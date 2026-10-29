@@ -31,11 +31,27 @@
   <span class="progress" aria-hidden="true"></span>
 </nav>
 
-<!-- 首屏：名字被“长期趋势”线切开——线上方实心、线下方描边；实际产出曲线绕着它波动 -->
+<!-- 首屏：左边是我是谁，右边是名字被“长期趋势”线切开——线上方实心、线下方描边；实际产出曲线绕着它波动 -->
 <header class="hero">
-  <div class="wide">
-    <h1 class="sr-only">Reyne</h1>
-    <div class="name-art" id="hero-name">
+  <div class="wide hero-grid">
+    <div class="hero-left">
+      <div class="tag">AI × FinTech · build in public</div>
+      <p class="title"><span>探索 AI 的边界</span><span>探索 AI 时代的财富自由之路</span></p>
+      <div class="btns">
+        <a class="btn" href="#work">查看作品 <span>→</span></a>
+        <a class="btn" href="#contact">联系我 <span>→</span></a>
+      </div>
+      <!-- Now building：手动更新这一句 -->
+      <a class="nowcard" href="#work">
+        <span class="tape" aria-hidden="true"></span>
+        <span class="h"><span>Now building</span><b>10.16</b></span>
+        <span class="p">合规投诉质检方案：统一示例口径，加了虚构数据声明、一页摘要和目录。</span>
+        <span class="f"><span>去看作品</span><span>→</span></span>
+      </a>
+    </div>
+    <div class="hero-right">
+      <h1 class="sr-only">Reyne</h1>
+      <div class="name-art" id="hero-name">
       <svg id="hero-svg" viewBox="0 50 1000 440" aria-hidden="true">
         <defs>
           <clipPath id="above-trend"><rect x="-60" y="-60" width="1120" height="322"/></clipPath>
@@ -53,24 +69,7 @@
       <span class="seg" data-phase="2" style="left:84%">衰退</span>
       <span class="here" id="here"><i></i><b>你在这里</b></span>
     </div>
-
-    <div class="hero-row">
-      <div>
-        <div class="tag">AI × FinTech · build in public</div>
-        <p class="lines">探索 AI 的边界<br>探索 AI 时代的财富自由之路</p>
-        <div class="btns">
-          <a class="btn" href="#work">查看作品 <span>→</span></a>
-          <a class="btn" href="#contact">联系我 <span>→</span></a>
-        </div>
-      </div>
       <div class="phase-note" id="phase-note" aria-live="polite"><b>复苏</b><span>产出还低于趋势，但已经开始回升。</span><small>周期四个阶段 · 鼠标沿着线走</small></div>
-      <!-- Now building：手动更新这一句 -->
-      <a class="nowcard" href="#work">
-        <span class="tape" aria-hidden="true"></span>
-        <span class="h"><span>Now building</span><b>10.16</b></span>
-        <span class="p">合规投诉质检方案：统一示例口径，加了虚构数据声明、一页摘要和目录。</span>
-        <span class="f"><span>去看作品</span><span>→</span></span>
-      </a>
     </div>
   </div>
 </header>

@@ -48,7 +48,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .progress{position:absolute;left:0;bottom:-1px;height:1px;width:100%;background:var(--accent);transform-origin:left;transform:scaleX(var(--p,0))}
 
 /* hero */
-.hero{padding:20px 0 90px;overflow:hidden}
+.hero{padding:40px 0 70px;overflow:hidden}
 .name-art{position:relative;touch-action:pan-y}
 .name-art svg{display:block;width:100%;height:auto;overflow:visible}
 .name-art text{font-family:"Playfair Display",Georgia,serif;font-weight:500}
@@ -70,11 +70,15 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .phase-note small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
 .js .seg,.js .here,.js .trend-label{opacity:0;transition:opacity .6s ease .9s,color .2s}
 .drawn .seg,.drawn .here,.drawn .trend-label{opacity:1}
-.hero-row{display:grid;grid-template-columns:1fr 300px 340px;gap:60px;align-items:end;margin-top:20px}
-.tag{display:flex;align-items:center;gap:10px;font-family:Inter,sans-serif;font-size:13px;letter-spacing:.04em;color:var(--accent)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:center;min-height:calc(100vh - var(--nav) - 110px)}
+.tag{display:flex;align-items:center;gap:10px;font-family:Inter,sans-serif;font-size:13px;letter-spacing:.06em;color:var(--accent)}
 .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent)}
-.lines{margin-top:16px;font-size:clamp(20px,2.4vw,27px);line-height:1.6;font-weight:400}
+.title{margin-top:22px;font:500 clamp(24px,2.6vw,40px)/1.45 "Noto Serif SC",serif;letter-spacing:.01em}
+.title span{display:block;white-space:nowrap}
 .btns{display:flex;gap:16px;flex-wrap:wrap;margin-top:36px}
+.hero-left .nowcard{margin-top:56px;max-width:360px}
+.hero-right{position:relative}
+.hero-right .phase-note{margin-top:14px;max-width:360px;margin-left:auto}
 .btn{display:inline-flex;align-items:center;gap:16px;border:1px solid var(--ink);padding:14px 30px;font-size:14px;font-weight:400;transition:background-color .2s,color .2s}
 .btn span{font-family:Inter,sans-serif;transition:transform .2s}
 .btn:hover{background:var(--ink);color:var(--bg)}
@@ -249,8 +253,9 @@ footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:2
   .desk{max-width:600px}
 }
 @media (max-width:900px){
-  .hero-row,.contact-row,.posts-grid{grid-template-columns:1fr;gap:48px}
-  .hero-row .phase-note{order:-1}
+  .hero-grid,.contact-row,.posts-grid{grid-template-columns:1fr;gap:48px}
+  .hero-grid{min-height:0}
+  .hero-right .phase-note{margin-left:0}
   /* 手机和平板：画板改成手指横滑 */
   .strip{transform:none!important}
   .sticky{overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
