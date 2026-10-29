@@ -31,7 +31,12 @@ npm run dev
 
 然后打开 <http://localhost:8000/>。
 
-## 部署（Vercel）
+## 部署
+
+**现在：GitHub Pages**（https://reyne7.github.io/reyne/）。推送到 `main` 后由 `.github/workflows/pages.yml` 自动构建部署（构建时 `BASE_PATH=/reyne`）。仓库 Settings → Pages 的 Source 需要选 **GitHub Actions**。
+
+**以后：Vercel**
+
 
 1. 用 GitHub 登录 <https://vercel.com>，Add New → Project，选 `Reyne7/reyne`；
 2. 不用改任何设置（`vercel.json` 已写好构建命令和输出目录），点 Deploy；

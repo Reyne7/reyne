@@ -7,6 +7,8 @@ const { marked } = require('marked');
 const ROOT = __dirname;
 const OUT = path.join(ROOT, 'dist');
 const CATS = ['周期', '金融科技', 'AI'];
+// 部署在子路径时（GitHub Pages：/reyne）由环境变量传入；Vercel 为空
+const BASE = (process.env.BASE_PATH || '').replace(/\/$/, '');
 
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
@@ -44,21 +46,21 @@ const posts = files.map((f) => {
     sort: meta.date,
     category: meta.category,
     summary: meta.summary || '',
-    cover: meta.cover ? `/blog/${slug}/${meta.cover.replace(/^images\//, 'images/')}` : '',
+    cover: meta.cover ? `${BASE}/blog/${slug}/${meta.cover.replace(/^images\//, 'images/')}` : '',
     minutes,
-    url: `/blog/${slug}/`,
+    url: `${BASE}/blog/${slug}/`,
     html: marked.parse(body),
   };
 }).sort((a, b) => (a.sort < b.sort ? 1 : -1));
 
 const head = (title) => `<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(title)}</title><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<title>${esc(title)}</title><link rel="icon" href="${BASE}/assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Noto+Serif+SC:wght@500&family=Noto+Sans+SC:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
-<link rel="stylesheet" href="/assets/site.css"></head><body>
-<nav class="nav"><div class="wide"><a href="/" class="logo">Reyne</a><ul><li><a href="/#work">作品</a></li><li><a href="/blog/">博客</a></li><li><a href="/#contact">联系</a></li></ul></div></nav>`;
+<link rel="stylesheet" href="${BASE}/assets/site.css"></head><body>
+<nav class="nav"><div class="wide"><a href="${BASE}/" class="logo">Reyne</a><ul><li><a href="${BASE}/#work">作品</a></li><li><a href="${BASE}/blog/">博客</a></li><li><a href="${BASE}/#contact">联系</a></li></ul></div></nav>`;
 const foot = `<footer><div class="wrap"><span>© 2026 Reyne · Built with AI, in public.</span><a class="top" href="#">回到顶部 <span>↑</span></a></div></footer></body></html>`;
 
 // 文章页
@@ -66,7 +68,7 @@ for (const p of posts) {
   const dir = path.join(OUT, 'blog', p.slug);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'index.html'), `${head(p.title + ' · Reyne')}
-<article class="article"><a class="back" href="/blog/">← 全部文章</a>
+<article class="article"><a class="back" href="${BASE}/blog/">← 全部文章</a>
 <div class="m"><span><b>${esc(p.category)}</b></span><span>${esc(p.date)}</span><span>约 ${p.minutes} 分钟</span></div>
 <h1>${esc(p.title)}</h1><div class="prose">${p.html}</div></article>${foot}`);
 }
